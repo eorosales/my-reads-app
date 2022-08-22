@@ -3,19 +3,38 @@ import BookShelf from './BookShelf';
 import * as BooksAPI from '../BooksAPI';
 
 const BookShelves = () => {
-  const [ currentlyReading, setCurrentlyReading ] = useState([]);
-  const [ wantToRead, setWantToRead ] = useState([]);
-  const [ read, setRead ] = useState([]); 
+  const [ books, setBooks ] = useState([]);
+
+  const currentlyReading = books && books.filter(book => book.shelf === "currentlyReading");
+  const wantToRead = books && books.filter(book => book.shelf === "wantToRead");
+  const read = books && books.filter(book => book.shelf === "read");
 
   useEffect(() => {
-    const getBooks = async () => {
-      const res = await BooksAPI.getAll();
-      setCurrentlyReading(res.filter(book => book.shelf === "currentlyReading"));
-      setWantToRead(res.filter(book => book.shelf === "wantToRead"));
-      setRead(res.filter(book => book.shelf === "read"));
-    }
-    getBooks()
-  }, []);
+    let mounted = true;
+
+    const getBooks = async () => {  
+      try {
+        await BooksAPI.getAll().then(res => {
+          setBooks(res);
+        })
+        }catch(err) {
+          console.log(err)
+        }
+      }
+
+      mounted && getBooks();
+
+      return () => ( mounted = false );
+
+    },[books]);
+
+
+
+  
+  const handleBookUpdate =   (book, shelf) => { 
+    const updateBook = () => BooksAPI.update(book, shelf);
+    updateBook(); 
+  }
 
   return (
     <>
@@ -24,9 +43,9 @@ const BookShelves = () => {
           <h1>MyReads</h1>
         </div> 
         
-        <BookShelf category={"Currently Reading"} books={currentlyReading} />
-        <BookShelf category={"Want to Read"} books={wantToRead} />
-        <BookShelf category={"Read"} books={read} />
+        <BookShelf category={"Currently Reading"} books={currentlyReading} bookUpdate={handleBookUpdate} />
+        <BookShelf category={"Want to Read"} books={wantToRead} bookUpdate={handleBookUpdate} />
+        <BookShelf category={"Read"} books={read} bookUpdate={handleBookUpdate} />
 
       </div>
       <div className="open-search">

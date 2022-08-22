@@ -1,6 +1,6 @@
 import Book from './Book';
 
-const BookShelf = ({ category, books }) => {
+const BookShelf = ({ category, books, bookUpdate }) => {
 
   return (    
     <div className="list-books-content">
@@ -10,13 +10,15 @@ const BookShelf = ({ category, books }) => {
           <div className="bookshelf-books">
             <ol className="books-grid">
               {
-                books.map(b => 
+                books && books.map(b => 
                   <li key={b.id}>
                     <Book 
+                      book={b}
                       title={b.title} 
                       author={b.authors}
-                      thumbnail={b.imageLinks.thumbnail} 
+                      thumbnail={b.imageLinks && b.imageLinks.thumbnail } 
                       shelf={b.shelf}
+                      bookUpdate={bookUpdate}
                     />
                   </li>)
                 }

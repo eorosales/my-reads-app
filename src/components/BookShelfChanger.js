@@ -1,11 +1,12 @@
 import { useState } from 'react';
 
-const BookShelfChanger = ({ currentShelf }) => {
-  const [ selectedShelf, setSelectedShelf ] = useState(currentShelf)
+const BookShelfChanger = ({ currentShelf, bookUpdate, book }) => {
+  const [ selectedShelf, setSelectedShelf ] = useState(currentShelf);
 
   const handleChange = (e) => {
-    e.preventDefault();
-    setSelectedShelf(e.target.value);
+    e.preventDefault(); 
+    setSelectedShelf(e.target.value); 
+    bookUpdate(book, e.target.value)
   }
 
   return (
