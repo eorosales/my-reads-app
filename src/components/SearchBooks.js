@@ -1,7 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import Book from './Book'
 
-const SearchBooks = () => {
+const SearchBooks = ({ search, searchedBooks, bookUpdate }) => {
+
+  const [ query, setQuery ] = useState("");
+
+  const updateQuery = (query) => {
+    if(query !== "") {
+      setQuery(query);
+      search(query);
+      return
+    } 
+
+    if(query === "") {
+      setQuery("");
+      search(query);
+      return
+    }
+  }
 
   return (
     <div className="search-books">
@@ -16,11 +33,28 @@ const SearchBooks = () => {
           <input
             type="text"
             placeholder="Search by title, author, or ISBN"
+            name="query"
+            value={query}
+            onChange={(e) => updateQuery(e.target.value)}
           />
         </div>
       </div>
       <div className="search-books-results">
-        <ol className="books-grid"></ol>
+        <ol className="books-grid">
+          {
+          searchedBooks[0] && searchedBooks.map(b => 
+            <li key={b.id}>
+              <Book 
+                book={b}
+                title={b.title} 
+                author={b.authors}
+                thumbnail={b.imageLinks && b.imageLinks.thumbnail } 
+                shelf={b.shelf}
+                bookUpdate={bookUpdate}
+              />
+            </li>) 
+          }
+        </ol>
       </div>
     </div>
   )
