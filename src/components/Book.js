@@ -1,6 +1,6 @@
 import BookShelfChanger from './BookShelfChanger';
 
-const Book = ({ book, bookId, title, author, thumbnail, shelf, bookUpdate }) => {
+const Book = ({ book, title, author, thumbnail, shelf, bookUpdate }) => {
   return (
     <div className="book">
       <div className="book-top">

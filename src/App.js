@@ -29,19 +29,30 @@ function App() {
   // Update book and UI on book shelf change
   const handleBookUpdate =  (book, shelf) => { 
     const updateBook = () => BooksAPI.update(book, shelf);
-    updateBook(); 
+    updateBook();    
   }
+
   // Retrieve books from db based on query
-  const handleSearchQuery = (query) => {   
-    const searchedBookResults = () => {
-        query !== "" 
-        ? 
-        BooksAPI.search(query, 20)
-          .then(res => setSearchedBooks(res))
-        :
-        setSearchedBooks([]); 
+  const handleSearchQuery = async (query) => {   
+    if(query !== "") {
+      await BooksAPI.search(query).then(res => {
+
+        res.forEach(book => { // for each book on the main page
+          const matchingBook = books.find(b => book.id === b.id); // find a book on the main page that is also in the search results
+          if(matchingBook) { // if a match exists
+            book.shelf = matchingBook.shelf // set the book in search results to the same as the one found on the main page
+          } else { // if not
+            book.shelf = "none" // mark all other books as 'None'
+          }
+        })
+        setSearchedBooks(res)
+      })
+      .catch(() => {
+        console.log('No book found')
+      })
+    } else {
+      setSearchedBooks([]);
     }
-    searchedBookResults();
   }
 
   return (
@@ -58,6 +69,7 @@ function App() {
       <Route exact path="/search" element=
         {
           <SearchBooks 
+            books={books}
             search={handleSearchQuery}
             searchedBooks={searchedBooks}
             bookUpdate={handleBookUpdate}
