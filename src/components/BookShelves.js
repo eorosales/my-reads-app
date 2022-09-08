@@ -1,24 +1,29 @@
-import { Link } from 'react-router-dom';  
-import BookShelf from './BookShelf';
+import { Link } from "react-router-dom";
+import Bookshelf from "../components/Bookshelf";
 
-const BookShelves = ({ currentlyReading, wantToRead, read, bookUpdate }) => {
+const Bookshelves = ({ categories, books, changeShelf }) => {
+  const shelves = ["currentlyReading", "wantToRead", "read"];
+
   return (
-    <>
-      <div className="list-books">
-        <div className="list-books-title">
-          <h1>MyReads</h1>
-        </div> 
-        
-        <BookShelf category={"Currently Reading"} books={currentlyReading} bookUpdate={bookUpdate} />
-        <BookShelf category={"Want to Read"} books={wantToRead} bookUpdate={bookUpdate} />
-        <BookShelf category={"Read"} books={read} bookUpdate={bookUpdate} />
-
+    <div className='list-books'>
+      <div className='list-books-title'>
+        <h1>MyReads</h1>
       </div>
-      <div className="open-search">
-        <Link to="/search">Add a book</Link>
+      {categories.map((category) => (
+        <Bookshelf
+          key={categories.indexOf(category)}
+          title={category}
+          books={books.filter(
+            (book) => book.shelf === shelves[categories.indexOf(category)]
+          )}
+          changeShelf={changeShelf}
+        />
+      ))}
+      <div className='open-search'>
+        <Link to='/search'>Add a book</Link>
       </div>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default BookShelves
+export default Bookshelves;

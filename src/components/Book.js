@@ -1,24 +1,22 @@
-import BookShelfChanger from './BookShelfChanger';
+import ShelfChanger from "./ShelfChanger";
 
-const Book = ({ book, title, author, thumbnail, shelf, bookUpdate }) => {
+const Book = ({ book, title, author, thumbnail, shelf, changeShelf }) => {
   return (
-    <div className="book">
-      <div className="book-top">
+    <div className='book'>
+      <div className='book-top'>
         <div
-          className="book-cover"
+          className='book-cover'
           style={{
             width: 128,
             height: 193,
-            backgroundImage:
-              `url(${thumbnail})`,
-          }}
-        ></div>
-        <BookShelfChanger currentShelf={shelf} bookUpdate={bookUpdate} book={book} />
+            backgroundImage: `url(${thumbnail})`,
+          }}></div>
+        <ShelfChanger shelf={shelf} book={book} changeShelf={changeShelf} />
       </div>
-      <div className="book-title">{title}</div>
-      <div className="book-authors">{author}</div>
+      <div className='book-title'>{title}</div>
+      <div className='book-authors'>{author}</div>
     </div>
-  )
-}
+  );
+};
 
-export default Book
+export default Book;

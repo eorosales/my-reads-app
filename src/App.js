@@ -1,82 +1,83 @@
 import "./App.css";
-import * as BooksAPI from './BooksAPI';
-import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import SearchBooks from './components/SearchBooks';
-import BookShelves from './components/BookShelves';
+import * as BooksAPI from "./BooksAPI";
+import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import Bookshelves from "./components/Bookshelves";
+import SearchBooks from "./components/SearchBooks";
 
 function App() {
-  // States
-  const [ books, setBooks ] = useState([]);
-  const [ searchedBooks, setSearchedBooks ] = useState([]);
-  // Books filtered based on shelf
-  const currentlyReading = books && books.filter(book => book.shelf === "currentlyReading");
-  const wantToRead = books && books.filter(book => book.shelf === "wantToRead");
-  const read = books && books.filter(book => book.shelf === "read");
-  // Side effect on mount 
+  const [booksOnShelves, setBooksOnShelves] = useState([]);
+  const [searchedBooks, setSearchedBooks] = useState([]);
+
+  const categories = ["Currently Reading", "Want to Read", "Read"];
+
   useEffect(() => {
-    const getBooks = async () => {  
+    BooksAPI.getAll().then((res) => setBooksOnShelves(res));
+  }, [booksOnShelves]);
+
+  const handleShelfChanger = (book, shelf) => {
+    const update = async () => {
       try {
-        await BooksAPI.getAll().then(res => {
-          setBooks(res);
-        })
-        }catch(err) {
+        await BooksAPI.update(book, shelf);
+      } catch (error) {
+        throw new Error(`${error}`);
       }
+    };
+    update();
+  };
+
+  const handleSearch = (query) => {
+    if (query === "" || query === undefined) {
+      return setSearchedBooks([]);
     }
-    getBooks();
-    },[books]);
 
-  // Update book and UI on book shelf change
-  const handleBookUpdate =  (book, shelf) => { 
-    const updateBook = () => BooksAPI.update(book, shelf);
-    updateBook();    
-  }
-
-  // Retrieve books from db based on query
-  const handleSearchQuery = async (query) => {   
-    if(query !== "") {
-      await BooksAPI.search(query).then(res => {
-
-        res.forEach(book => { // for each book on the main page
-          const matchingBook = books.find(b => book.id === b.id); // find a book on the main page that is also in the search results
-          if(matchingBook) { // if a match exists
-            book.shelf = matchingBook.shelf // set the book in search results to the same as the one found on the main page
-          } else { // if not
-            book.shelf = "none" // mark all other books as 'None'
-          }
-        })
-        setSearchedBooks(res)
-      })
-      .catch(() => {
-        console.log('No book found')
-      })
-    } else {
-      setSearchedBooks([]);
+    if (query !== "" || query.length !== undefined) {
+      const searchBooks = () => {
+        BooksAPI.search(query)
+          .then((res) => {
+            res.forEach((book) => {
+              const matchingBook = booksOnShelves.find((b) => book.id === b.id);
+              if (matchingBook) {
+                book.shelf = matchingBook.shelf;
+              } else {
+                book.shelf = "none";
+              }
+            });
+            setSearchedBooks(res);
+          })
+          .catch(() => {
+            setSearchedBooks([]);
+          });
+      };
+      searchBooks();
     }
-  }
+  };
 
   return (
-    <Routes className="app">
-      <Route exact path="/" element=
-        {
-          <BookShelves 
-            currentlyReading={currentlyReading}
-            wantToRead={wantToRead}
-            read={read}
-            bookUpdate={handleBookUpdate}
+    <Routes className='app'>
+      <Route
+        exact
+        path='/'
+        element={
+          <Bookshelves
+            categories={categories}
+            books={booksOnShelves}
+            changeShelf={handleShelfChanger}
           />
-        } />
-      <Route exact path="/search" element=
-        {
-          <SearchBooks 
-            books={books}
-            search={handleSearchQuery}
-            searchedBooks={searchedBooks}
-            bookUpdate={handleBookUpdate}
+        }
+      />
+      <Route
+        exact
+        path='/search'
+        element={
+          <SearchBooks
+            books={searchedBooks}
+            changeShelf={handleShelfChanger}
+            search={handleSearch}
           />
-        } />
+        }
+      />
     </Routes>
-    
   );
 }
 

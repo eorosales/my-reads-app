@@ -1,20 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-const BookShelfChanger = ({ currentShelf, bookUpdate, book }) => {
-  const [selectedShelf, setSelectedShelf] = useState(currentShelf);
-  const toMainPage = useNavigate();
+const ShelfChanger = ({ shelf, book, changeShelf }) => {
+  const [selectedShelf, setSelectedShelf] = useState(shelf);
 
-  const handleChange = (e) => {
+  const onShelfSelect = (e) => {
     e.preventDefault();
     setSelectedShelf(e.target.value);
-    bookUpdate(book, e.target.value);
-    toMainPage("/");
+    changeShelf(book, e.target.value);
   };
 
   return (
     <div className='book-shelf-changer'>
-      <select defaultValue={currentShelf} onChange={handleChange}>
+      <select defaultValue={selectedShelf} onChange={onShelfSelect}>
         <option disabled>Move to...</option>
         <option value='currentlyReading'>Currently Reading</option>
         <option value='wantToRead'>Want to Read</option>
@@ -25,4 +22,4 @@ const BookShelfChanger = ({ currentShelf, bookUpdate, book }) => {
   );
 };
 
-export default BookShelfChanger;
+export default ShelfChanger;

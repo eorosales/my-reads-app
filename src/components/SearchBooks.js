@@ -1,28 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Book from "./Book";
 
-const SearchBooks = ({ search, searchedBooks, bookUpdate }) => {
+const SearchBooks = ({ books, changeShelf, search }) => {
   const [query, setQuery] = useState("");
 
-  useEffect(() => {}, []);
-
-  const updateQuery = (query) => {
+  const handleQuery = (query) => {
     if (query !== "") {
       setQuery(query);
       search(query);
       return;
-    } else {
+    }
+    if (query === "") {
       setQuery("");
       search(query);
       return;
     }
-
-    // if(query === "") {
-    //   setQuery("");
-    //   search(query);
-    //   return
-    // }
   };
 
   return (
@@ -35,27 +28,25 @@ const SearchBooks = ({ search, searchedBooks, bookUpdate }) => {
           <input
             type='text'
             placeholder='Search by title, author, or ISBN'
-            name='query'
             value={query}
-            onChange={(e) => updateQuery(e.target.value)}
+            onChange={(e) => handleQuery(e.target.value)}
           />
         </div>
       </div>
       <div className='search-books-results'>
         <ol className='books-grid'>
-          {searchedBooks.length !== 0 &&
-            searchedBooks.map((b) => (
-              <li key={b.id}>
-                <Book
-                  book={b}
-                  title={b.title}
-                  author={b.authors}
-                  thumbnail={b.imageLinks && b.imageLinks.thumbnail}
-                  shelf={b.shelf}
-                  bookUpdate={bookUpdate}
-                />
-              </li>
-            ))}
+          {books.map((b) => (
+            <li key={b.id}>
+              <Book
+                book={b}
+                title={b.title}
+                author={b.authors}
+                thumbnail={b.imageLinks && b.imageLinks.thumbnail}
+                shelf={b.shelf}
+                changeShelf={changeShelf}
+              />
+            </li>
+          ))}
         </ol>
       </div>
     </div>
